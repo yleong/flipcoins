@@ -6,6 +6,7 @@ import "math"
 var THRESHOLD = 0.0001
 
 func TestCoinflip(t *testing.T){
+    t.Parallel()
     heads, tails := 0, 0
     for i := 0; i < 1000; i++ {
         if flip() == 0 {
@@ -42,6 +43,7 @@ var tests = []testpair{
 
 
 func TestNumflips(t *testing.T){
+    t.Parallel()
 	for _, pair := range tests {
 		actual := numflips(pair.setsize)
 		if actual  != pair.numflips {
@@ -64,6 +66,7 @@ func TestCalculateUniform(t *testing.T){
 
 
 func TestTrialUniform(t *testing.T){
+    t.Parallel()
 	numTrials := 1000000
 	setSize := 1000
 	ERROR_THRESH := 0.1
