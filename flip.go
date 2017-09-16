@@ -18,24 +18,25 @@ func flip() int {
 */
 func numflips(set_size int) int {
     log := math.Log2(float64(set_size))
-    return int(math.Pow(2, math.Ceil(log)))
+    return int(math.Ceil(log))
 }
 
 /*
- Define m to be the number of flips needed to cover n. The chance that any
- 1 of the n items getting chosen on first try is 1/m, on second try is
- (m-n)/m*1/m, on third try is (m-n)/m*(m-n)/m*1/m. So we will just sum this up
- Or we can probably use the geometric progression formula
+ Define k to be the number of flips needed to cover n and m = 2^k. The chance
+that any 1 of the n items getting chosen on first try is 1/m, on second try is
+(m-n)/m*1/m, on third try is (m-n)/m*(m-n)/m*1/m. So we will just sum this up
+Or we can probably use the geometric progression formula
 */
-func calculateUniform(set_size int, num_terms int) {
-   totalItems := numflips(set_size)
-   multiplier := float64(totalItems - set_size)/float64(totalItems)
-   sum := 1.0/float64(totalItems)
-   for i, term := 0, sum; i < num_terms; i++ {
+func calculateUniform(set_size int, num_terms int) float64 {
+    totalItems := int(math.Pow(2,float64(numflips(set_size))))
+    multiplier := float64(totalItems - set_size)/float64(totalItems)
+    sum := 1.0/float64(totalItems)
+    for i, term := 0, sum; i < num_terms; i++ {
         term *= multiplier
         sum += term
-   }
-   fmt.Printf("Probability of choosing 1 item out of %d: %f\n", set_size, sum)
+    }
+	fmt.Printf("Probability of choosing 1 item out of %d: %f\n", set_size, sum)
+	return sum
 }
 
 /*
@@ -43,7 +44,7 @@ func calculateUniform(set_size int, num_terms int) {
  and check that each item do get selected more or less with equal frequency in
  the end
 */
-func trialUniform(set_size int, num_trials int) {
+func trialUniform(set_size int, num_trials int) []int {
     num_flips := numflips(set_size)
     hits := make([]int, set_size)
     for i := 0; i < num_trials; i++ {
@@ -63,18 +64,9 @@ func trialUniform(set_size int, num_trials int) {
     for i := 0; i < set_size; i++ {
         fmt.Printf("Number of hits for %d : %d\n", i, hits[i]);
     }
+	return hits
 }
 
-func testPowerOfTwo(){
-    for i := 0; i < 100; i++ {
-        fmt.Printf("the smallestpoweroftwo of %d is %d\n", i, numflips(i))
-    }
-}
-func testCalculateUniform(){
-    for i := 0; i < 100; i++ {
-        calculateUniform(i, 100)
-    }
-}
 func getOpts() (int, int, int) {
     setsize := flag.Int("n", 3, "number of items in a set")
     numtrials := flag.Int("t", 1000, "number of trials to simulate")
