@@ -5,7 +5,7 @@
  */
 package main
 
-import ("fmt";"math/rand"; "math"; "time")
+import ("fmt";"math/rand"; "math"; "time"; "flag")
 
 func flip() int {
     return rand.Intn(2)
@@ -27,11 +27,10 @@ func numflips(set_size int) int {
  (m-n)/m*1/m, on third try is (m-n)/m*(m-n)/m*1/m. So we will just sum this up
  Or we can probably use the geometric progression formula
 */
-func calculateUniform(set_size int) {
+func calculateUniform(set_size int, num_terms int) {
    totalItems := numflips(set_size)
    multiplier := float64(totalItems - set_size)/float64(totalItems)
    sum := 1.0/float64(totalItems)
-   num_terms := 100
    for i, term := 0, sum; i < num_terms; i++ {
         term *= multiplier
         sum += term
@@ -44,8 +43,7 @@ func calculateUniform(set_size int) {
  and check that each item do get selected more or less with equal frequency in
  the end
 */
-func trialUniform(set_size int) {
-    num_trials := 10000
+func trialUniform(set_size int, num_trials int) {
     num_flips := numflips(set_size)
     hits := make([]int, set_size)
     for i := 0; i < num_trials; i++ {
@@ -74,11 +72,21 @@ func testPowerOfTwo(){
 }
 func testCalculateUniform(){
     for i := 0; i < 100; i++ {
-        calculateUniform(i)
+        calculateUniform(i, 100)
     }
 }
+func getOpts() (int, int, int) {
+    setsize := flag.Int("n", 3, "number of items in a set")
+    numtrials := flag.Int("t", 1000, "number of trials to simulate")
+    numterms := flag.Int("m", 100, "number of terms to sum")
+    flag.Parse()
+    return *setsize, *numtrials, *numterms
+}
+
 func main() {
     rand.Seed(time.Now().UTC().UnixNano())
-    calculateUniform(3)
-    trialUniform(3)
+    setsize, numtrials, numterms := getOpts()
+
+    calculateUniform(setsize, numterms)
+    trialUniform(setsize, numtrials)
 }
